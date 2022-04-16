@@ -12,4 +12,4 @@ admins_id = [
 
 mysql_user = str(os.getenv("mysql_u"))
 mysql_password = str(os.getenv("mysql_p"))
-mysql_db = str(os.getenv('db'))
+mysql_db = str(os.getenv('dbc'))
