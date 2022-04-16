@@ -1,7 +1,7 @@
 from loader import db, cursor
 
 
-def sql():
+def sql_start():
     if db:
         print('Database connected')
 
@@ -14,6 +14,7 @@ def sql():
         client_id INT,
         order_date DATE
         )""")
+        db.commit()
 
         cursor.execute("""CREATE TABLE IF NOT EXISTS users(
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -24,3 +25,4 @@ def sql():
         date DATE,
         admin_status tinyint(4)
         )""")
+        db.commit()
