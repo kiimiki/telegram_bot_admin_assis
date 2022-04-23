@@ -15,10 +15,10 @@ orderMenu.add(btnAccept, btnCancel)
 # --- Main menu ---
 
 mainMenu = ReplyKeyboardMarkup(resize_keyboard=True)
-btn_m1 = KeyboardButton('Меню 🏷')
-btn_m2 = KeyboardButton('Оплата 💲')
-btn_m3 = KeyboardButton('О проекте  📌')
-mainMenu.add(btn_m3).insert(btn_m1).insert(btn_m2)
+btn_m1 = KeyboardButton('Услуги 🏷')
+btn_m2 = KeyboardButton('Товары 💲')
+btn_m3 = KeyboardButton('Корзина 📌')
+mainMenu.add(btn_m1).insert(btn_m2).insert(btn_m3)
 
 # --- Sub Menu ---
 

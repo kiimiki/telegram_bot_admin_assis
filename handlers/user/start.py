@@ -16,8 +16,8 @@ class FSMorders(StatesGroup):
 async def command_call_main_menu(message: types.Message):
     cursor.execute(f"SELECT * FROM users WHERE user_id = {message.chat.id}")
     a_u = cursor.fetchone()
-    # print(message)
-    if a_u is None:
+    print(a_u)
+    if a_u == 1:
         for admin_id in admins_id:
             if str(admin_id) == str(message.from_user.id):
                 admin_s = "1"
@@ -40,6 +40,7 @@ async def command_call_main_menu(message: types.Message):
     else:
         cursor.execute(f"SELECT * FROM users WHERE user_id = {message.chat.id}")
         a_u_s = cursor.fetchone()[-1]
+        print(a_u_s)
         if a_u_s == 1:
             await message.answer(f"Добро пожаловать, Админ: {message.from_user.full_name}", reply_markup=mainMenu)
         else:
@@ -47,15 +48,33 @@ async def command_call_main_menu(message: types.Message):
 
 
 # --- Main Menu ---
-@dp.message_handler(text=["Меню 🏷", "Оплата 💲", "О проекте  📌", 'Главное меню'])
+@dp.message_handler(text=["Услуги 🏷", "Товары 💲", "Корзина 📌", 'Главное меню'])
 async def main_menu(message: types.Message):
-    if message.text == "Меню 🏷":
+    if message.text == "Услуги 🏷":
         await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}\n"
                              f" Выберете интересующий раздел ", reply_markup=subMenu)
-    elif message.text == "Оплата 💲":
+    elif message.text == "Товары 💲":
         await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}")
-    elif message.text == "О проекте  📌":
-        await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}")
+    elif message.text == "Корзина 📌":
+        # await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}")
+        cursor.execute(f"SELECT * FROM orders WHERE client_id = {message.chat.id}")
+        all_orders = cursor.fetchall()
+        db.commit()
+        # print(all_orders)
+        if len(all_orders) == 0:
+            await message.answer("У вас еще нет заказов!")
+        else:
+            for cl_order in all_orders:
+                o_n = str(cl_order[1])
+                j_n = cl_order[2]
+                j_d = cl_order[3]
+                j_s = cl_order[4]
+                j_date = cl_order[6]
+                # print(all_orders)
+                await message.answer(f"{message.from_user.full_name}\n Номер заказа: {o_n}"
+                                     f"\n Наименование: {j_n}\n Описание: {j_d}\n"
+                                     f" Статус: {j_s}\n Дата: {j_date}")
+
     elif message.text == 'Главное меню':
         await message.answer(f"{message.text}", reply_markup=mainMenu)
 
@@ -109,13 +128,11 @@ async def cmd_cancel(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(state=FSMorders.job_description)
-# @dp.message_handler(text='Подтвердить заказ')
 async def job_description(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['job_description'] = message.text
     await message.answer(message.text)
     async with state.proxy() as data:
-
         order_number = random.randint(1000, 999999999)
 
         await message.answer(f"{message.chat.full_name}\n Номер заказа:\n {order_number}\n Наименование услуги:\n"
@@ -126,11 +143,19 @@ async def job_description(message: types.Message, state: FSMContext):
         ins2 = str(list(data.values())[1])
         # print(ins1)
         # print(ins2)
-
-        sql_order_reg = "INSERT INTO orders (order_number, job_name, job_description, status, client_id ,order_date) " \
-                        "VALUES (%s, %s, %s, %s, %s, %s)"
-        val_order_reg = (order_number, ins1, ins2, '0', message.from_user.id, message.date)
-        cursor.execute(sql_order_reg, val_order_reg)
-        db.commit()
-        await state.finish()
-        await message.answer('В ближайшее время с вами свяжется специалист по вашему заказу', reply_markup=mainMenu)
+        # await state.finish()
+        if message.text == 'Подтвердить заказ':
+            sql_order_reg = "INSERT INTO orders (order_number, job_name, job_description, status, client_id, " \
+                            "order_date)" \
+                            "VALUES (%s, %s, %s, %s, %s, %s)"
+            val_order_reg = (order_number, ins1, ins2, '0', message.from_user.id, message.date)
+            cursor.execute(sql_order_reg, val_order_reg)
+            db.commit()
+            await state.finish()
+            await message.answer('В ближайшее время с вами свяжется специалист по вашему заказу', reply_markup=mainMenu)
+        elif message.text == "Отменить Заказ":
+            current_state = await state.get_state()
+            if current_state is None:
+                return
+            await message.answer("Заказ отменен, вы возвращены в главное меню", reply_markup=mainMenu)
+            await state.finish()
