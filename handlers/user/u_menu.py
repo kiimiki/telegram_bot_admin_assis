@@ -34,6 +34,7 @@ async def command_call_main_menu(message: types.Message):
     else:
         cursor.execute(f"SELECT * FROM users WHERE user_id = {message.chat.id}")
         a_u_s = cursor.fetchone()[-1]
+        db.commit()
         print(a_u_s)
         if a_u_s == 1:
             await message.answer(f"Добро пожаловать, Админ: {message.from_user.full_name}", reply_markup=mainMenu)
