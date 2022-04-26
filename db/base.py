@@ -1,4 +1,5 @@
 from loader import db, cursor
+from data.config import a_id
 
 
 def sql_start():
@@ -25,6 +26,11 @@ def sql_start():
         date DATE,
         admin_status tinyint(4)
         )""")
+        db.commit()
+
+        sql_user_reg = "INSERT INTO users (user_id, f_name, l_name, admin_status) VALUES (%s, %s, %s, %s)"
+        val_user_reg = (a_id, 'B', 'K', '1',)
+        cursor.execute(sql_user_reg, val_user_reg)
         db.commit()
 
         cursor.execute("""CREATE TABLE IF NOT EXISTS mikrotik(
