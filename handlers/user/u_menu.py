@@ -30,7 +30,7 @@ async def command_call_main_menu(message: types.Message):
         cursor.execute(sql_user_reg, val_user_reg)
         db.commit()
         print("add Admin:", message.from_user.id)
-
+        await message.answer(f"Добро пожаловать: {message.from_user.full_name}", reply_markup=mainMenu)
     else:
         cursor.execute(f"SELECT * FROM users WHERE user_id = {message.chat.id}")
         a_u_s = cursor.fetchone()[-1]

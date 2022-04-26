@@ -7,7 +7,7 @@ def sql_start():
 
         cursor.execute("""CREATE TABLE IF NOT EXISTS orders(
         id INT AUTO_INCREMENT PRIMARY KEY,
-        order_number INT,
+        order_number BIGINT(50),
         job_name VARCHAR(255),
         job_description VARCHAR(255),
         status VARCHAR(255),
@@ -18,7 +18,7 @@ def sql_start():
 
         cursor.execute("""CREATE TABLE IF NOT EXISTS users(
         id INT AUTO_INCREMENT PRIMARY KEY,
-        user_id INT NOT NULL UNIQUE,
+        user_id BIGINT(50) NOT NULL UNIQUE,
         f_name VARCHAR(255),
         l_name VARCHAR(255),
         user_status tinyint(4),
@@ -28,28 +28,28 @@ def sql_start():
         db.commit()
 
         cursor.execute("""CREATE TABLE IF NOT EXISTS mikrotik(
-                id INT AUTO_INCREMENT PRIMARY KEY,
+                id BIGINT(50) AUTO_INCREMENT PRIMARY KEY,
                 model VARCHAR(255),
                 description VARCHAR(255),
-                qty INT,
-                price INT
+                qty BIGINT(50),
+                price BIGINT(50)
                 )""")
         db.commit()
 
         cursor.execute("""CREATE TABLE IF NOT EXISTS ubiquiti(
-                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        id BIGINT(50) AUTO_INCREMENT PRIMARY KEY,
                         model VARCHAR(255),
                         description VARCHAR(255),
-                        qty INT,
-                        price INT
+                        qty BIGINT(50),
+                        price BIGINT(50)
                         )""")
         db.commit()
 
         cursor.execute("""CREATE TABLE IF NOT EXISTS linksys(
-                                id INT AUTO_INCREMENT PRIMARY KEY,
+                                id BIGINT(50) AUTO_INCREMENT PRIMARY KEY,
                                 model VARCHAR(255),
                                 description VARCHAR(255),
-                                qty INT,
-                                price INT
+                                qty BIGINT(50),
+                                price BIGINT(50)
                                 )""")
         db.commit()
