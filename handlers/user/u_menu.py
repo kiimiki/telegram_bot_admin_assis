@@ -32,17 +32,17 @@ async def command_call_main_menu(message: types.Message):
                 cursor.execute(sql_user_reg, val_user_reg)
                 db.commit()
                 await message.answer(f"Добро пожаловать, Админ: {message.from_user.full_name}", reply_markup=mainMenu)
-            elif str(admin_id) != str(message.from_user.id):
+            else:
                 sql_user_reg = "INSERT INTO users (user_id, f_name, l_name, user_status, date ,admin_status) " \
                                "VALUES (%s, %s, %s, %s, %s, %s)"
-                val_user_reg = (message.from_user.id, message.from_user.first_name, message.from_user.last_name, '1',
+                val_user_reg = (message.from_user.id, message.from_user.first_name, message.from_user.last_name, '0',
                                 message.date, admin_s,)
                 cursor.execute(sql_user_reg, val_user_reg)
                 db.commit()
                 await message.answer(f"Добро пожаловать: {message.from_user.full_name}", reply_markup=mainMenu)
     else:
         cursor.execute(f"SELECT * FROM users WHERE user_id = {message.chat.id}")
-        a_u_s = cursor.fetchone()[-1]
+        a_u_s = cursor.fetchone()
         print(a_u_s)
         if a_u_s == 1:
             await message.answer(f"Добро пожаловать, Админ: {message.from_user.full_name}", reply_markup=mainMenu)
