@@ -26,3 +26,30 @@ def sql_start():
         admin_status tinyint(4)
         )""")
         db.commit()
+
+        cursor.execute("""CREATE TABLE IF NOT EXISTS mikrotik(
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                model VARCHAR(255),
+                description VARCHAR(255),
+                qty INT,
+                price INT
+                )""")
+        db.commit()
+
+        cursor.execute("""CREATE TABLE IF NOT EXISTS ubiquiti(
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        model VARCHAR(255),
+                        description VARCHAR(255),
+                        qty INT,
+                        price INT
+                        )""")
+        db.commit()
+
+        cursor.execute("""CREATE TABLE IF NOT EXISTS linksys(
+                                id INT AUTO_INCREMENT PRIMARY KEY,
+                                model VARCHAR(255),
+                                description VARCHAR(255),
+                                qty INT,
+                                price INT
+                                )""")
+        db.commit()

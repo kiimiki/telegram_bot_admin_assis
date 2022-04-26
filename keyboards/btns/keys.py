@@ -37,9 +37,17 @@ osAdminMenu.add(btnLinux, btnWindows, btnMac).add(btnBack, btnMainM)
 
 # --- Network Admin menu---
 
-netAdminMenu = ReplyKeyboardMarkup(resize_keyboard=True)
+netMenu = ReplyKeyboardMarkup(resize_keyboard=True)
 btnRouter = KeyboardButton('Маршрутизатор(ы)')
 btnSwitch = KeyboardButton('Коммутатор(ы)')
 btnRoSw = KeyboardButton('Маршрутизатор(ы)/Коммутатор(ы)/Точка WiFi')
 btnWiFi = KeyboardButton('Точка WiFi')
-netAdminMenu.add(btnRouter, btnSwitch, btnWiFi, btnRoSw).add(btnBack, btnMainM)
+netMenu.add(btnRouter, btnSwitch, btnWiFi, btnRoSw).add(btnBack, btnMainM)
+
+# --- Network Equipment Goods ---
+
+netEquipment = ReplyKeyboardMarkup(resize_keyboard=True)
+btnMikrotik = KeyboardButton('Mikrotik')
+btnUbiquiti = KeyboardButton('Ubiquiti')
+btnLinksys = KeyboardButton('Linksys')
+netEquipment.add(btnMikrotik, btnUbiquiti, btnLinksys).add(btnMainM)

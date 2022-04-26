@@ -1,6 +1,6 @@
 from aiogram import types
 from loader import dp, db, cursor
-from keyboards import mainMenu, subMenu, osAdminMenu, netAdminMenu, orderMenu
+from keyboards import mainMenu, subMenu, osAdminMenu, netMenu, orderMenu, netEquipment
 from data.config import admins_id
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
@@ -58,9 +58,9 @@ async def main_menu(message: types.Message):
         await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}\n"
                              f" Выберете интересующий раздел ", reply_markup=subMenu)
     elif message.text == "Товары 💲":
-        await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}")
+        await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}",
+                             reply_markup=netEquipment)
     elif message.text == "Корзина 📌":
-        # await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}")
         cursor.execute(f"SELECT * FROM orders WHERE client_id = {message.chat.id}")
         all_orders = cursor.fetchall()
         db.commit()
@@ -91,7 +91,7 @@ async def sub_menu(message: types.Message):
                              f" Выберете интересующий раздел ", reply_markup=osAdminMenu)
     elif message.text == 'Нстройка сетевого оборудования':
         await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}",
-                             reply_markup=netAdminMenu)
+                             reply_markup=netMenu)
     elif message.text == "Назад":
         await message.answer(f"{message.text}", reply_markup=subMenu)
 
