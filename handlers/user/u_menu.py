@@ -18,29 +18,19 @@ class FSMorders(StatesGroup):
 
 @dp.message_handler(text="/start")
 async def command_call_main_menu(message: types.Message):
-    cursor.execute(f"SELECT * FROM users WHERE user_id = {message.chat.id}")
-    a_u = cursor.fetchone()
-    print(a_u)
-    if a_u == 1:
-        for admin_id in admins_id:
-            if str(admin_id) == str(message.from_user.id):
-                admin_s = "1"
-                sql_user_reg = "INSERT INTO users (user_id, f_name, l_name, user_status, date ,admin_status) " \
-                               "VALUES (%s, %s, %s, %s, %s, %s)"
-                val_user_reg = (message.from_user.id, message.from_user.first_name, message.from_user.last_name, '1',
-                                message.date, admin_s,)
-                cursor.execute(sql_user_reg, val_user_reg)
-                db.commit()
-                await message.answer(f"Добро пожаловать, Админ: {message.from_user.full_name}", reply_markup=mainMenu)
-            else:
-                admin_s = "0"
-                sql_user_reg = "INSERT INTO users (user_id, f_name, l_name, user_status, date ,admin_status) " \
-                               "VALUES (%s, %s, %s, %s, %s, %s)"
-                val_user_reg = (message.from_user.id, message.from_user.first_name, message.from_user.last_name, '0',
-                                message.date, admin_s,)
-                cursor.execute(sql_user_reg, val_user_reg)
-                db.commit()
-                await message.answer(f"Добро пожаловать: {message.from_user.full_name}", reply_markup=mainMenu)
+    cursor.execute(f"SELECT * FROM users WHERE user_id = {message.from_user.id}")
+    c_u = cursor.fetchone()
+    print(c_u)
+    print(message.from_user.id)
+    if c_u is None:
+        sql_user_reg = "INSERT INTO users (user_id, f_name, l_name, user_status, date, admin_status) " \
+                       "VALUES (%s, %s, %s, %s, %s, %s)"
+        val_user_reg = (message.from_user.id, message.from_user.first_name, message.from_user.last_name, '1',
+                        message.date, '0',)
+        cursor.execute(sql_user_reg, val_user_reg)
+        db.commit()
+        print("add Admin:", message.from_user.id)
+
     else:
         cursor.execute(f"SELECT * FROM users WHERE user_id = {message.chat.id}")
         a_u_s = cursor.fetchone()[-1]
