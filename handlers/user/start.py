@@ -6,6 +6,10 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 import random
 
+order_d = []
+job_n_d = []
+job_d = []
+
 
 class FSMorders(StatesGroup):
     job_name = State()
@@ -122,9 +126,9 @@ async def job_name(message: types.Message, state: FSMContext):
 async def cmd_cancel(message: types.Message, state: FSMContext):
     current_state = await state.get_state()
     if current_state is None:
-        return
-    await message.answer("Заказ отменен, вы возвращены в главное меню", reply_markup=mainMenu)
-    await state.finish()
+        # return
+        await message.answer("Заказ отменен, вы возвращены в главное меню", reply_markup=mainMenu)
+        await state.finish()
 
 
 @dp.message_handler(state=FSMorders.job_description)
@@ -143,19 +147,28 @@ async def job_description(message: types.Message, state: FSMContext):
         ins2 = str(list(data.values())[1])
         # print(ins1)
         # print(ins2)
-        # await state.finish()
-        if message.text == 'Подтвердить заказ':
-            sql_order_reg = "INSERT INTO orders (order_number, job_name, job_description, status, client_id, " \
-                            "order_date)" \
-                            "VALUES (%s, %s, %s, %s, %s, %s)"
-            val_order_reg = (order_number, ins1, ins2, '0', message.from_user.id, message.date)
-            cursor.execute(sql_order_reg, val_order_reg)
-            db.commit()
-            await state.finish()
-            await message.answer('В ближайшее время с вами свяжется специалист по вашему заказу', reply_markup=mainMenu)
-        elif message.text == "Отменить Заказ":
-            current_state = await state.get_state()
-            if current_state is None:
-                return
-            await message.answer("Заказ отменен, вы возвращены в главное меню", reply_markup=mainMenu)
-            await state.finish()
+
+        order_d.append(order_number)
+        job_n_d.append(ins1)
+        job_d.append(ins2)
+        await state.finish()
+
+
+@dp.message_handler(text=['Подтвердить заказ', 'Отменить Заказ'])
+async def save_to_bd(message: types.Message):
+    if message.text == 'Подтвердить заказ':
+        print(order_d, job_n_d, job_d)
+        sql_order_reg = "INSERT INTO orders (order_number, job_name, job_description, status, client_id, " \
+                        "order_date) VALUES (%s, %s, %s, %s, %s, %s)"
+        val_order_reg = (order_d[0], job_n_d[0], job_d[0], '0', message.from_user.id, message.date)
+        cursor.execute(sql_order_reg, val_order_reg)
+        db.commit()
+        order_d.clear()
+        job_n_d.clear()
+        job_d.clear()
+        await message.answer('В ближайшее время с вами свяжется специалист по вашему заказу', reply_markup=mainMenu)
+    elif message.text == 'Отменить Заказ':
+        order_d.clear()
+        job_n_d.clear()
+        job_d.clear()
+        await message.answer('Ваш заказ отменен', reply_markup=mainMenu)
