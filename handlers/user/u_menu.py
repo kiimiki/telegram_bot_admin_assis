@@ -20,7 +20,7 @@ class FSMorders(StatesGroup):
 async def command_call_main_menu(message: types.Message):
     cursor.execute(f"SELECT * FROM users WHERE user_id = {message.chat.id}")
     a_u = cursor.fetchone()
-    # print(a_u)
+    print(a_u)
     if a_u == 1:
         for admin_id in admins_id:
             if str(admin_id) == str(message.from_user.id):
@@ -43,7 +43,7 @@ async def command_call_main_menu(message: types.Message):
                 await message.answer(f"Добро пожаловать: {message.from_user.full_name}", reply_markup=mainMenu)
     else:
         cursor.execute(f"SELECT * FROM users WHERE user_id = {message.chat.id}")
-        a_u_s = cursor.fetchone()
+        a_u_s = cursor.fetchone()[-1]
         print(a_u_s)
         if a_u_s == 1:
             await message.answer(f"Добро пожаловать, Админ: {message.from_user.full_name}", reply_markup=mainMenu)
