@@ -17,14 +17,14 @@ class FSMorders(StatesGroup):
 
 @dp.message_handler(text="/start")
 async def command_call_main_menu(message: types.Message):
-    cursor.execute(f"SELECT * FROM users WHERE user_id = {message.from_user.id}")
+    cursor.execute(f"SELECT * FROM users WHERE user_id = {message.chat.id}")
     c_u = cursor.fetchone()
     print(c_u)
-    print(message.from_user.id)
+    print(message.chat.id)
     if c_u is None:
         sql_user_reg = "INSERT INTO users (user_id, f_name, l_name, user_status, date, admin_status) " \
                        "VALUES (%s, %s, %s, %s, %s, %s)"
-        val_user_reg = (message.from_user.id, message.from_user.first_name, message.from_user.last_name, '1',
+        val_user_reg = (message.chat.id, message.from_user.first_name, message.from_user.last_name, '1',
                         message.date, '0',)
         cursor.execute(sql_user_reg, val_user_reg)
         db.commit()
@@ -42,7 +42,7 @@ async def command_call_main_menu(message: types.Message):
 
 
 # --- Main Menu ---
-@dp.message_handler(text=["Услуги 🏷", "Товары 💲", "Корзина 📌", 'Главное меню'])
+@dp.message_handler(text=["Услуги 🏷", "Товары 💲", "Корзина 📌", 'Главное меню', 'Mikrotik'])
 async def main_menu(message: types.Message):
     if message.text == "Услуги 🏷":
         await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}\n"
@@ -72,6 +72,19 @@ async def main_menu(message: types.Message):
     elif message.text == 'Главное меню':
         await message.answer(f"{message.text}", reply_markup=mainMenu)
 
+    elif message.text == 'Mikrotik':
+        cursor.execute(f"SELECT * FROM mikrotik")
+        all_mikrotik = cursor.fetchall()
+        db.commit()
+        for mikrot in all_mikrotik:
+            mikrot_model = mikrot[1]
+            mikrot_description = mikrot[2]
+            mikrot_qty = mikrot[3]
+            mikrot_price = mikrot[4]
+            await message.answer(f"Модель: {mikrot_model}\n"
+                                 f" Описание: {mikrot_description}\n"
+                                 f" Количество: {mikrot_qty} шт.\n"
+                                 f" Цена: {mikrot_price} грн.")
 
 # --- Sub Menu ---
 @dp.message_handler(text=['Нстройка OS Linux/Windows/MacOS', 'Нстройка сетевого оборудования', "Назад"])
