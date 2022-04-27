@@ -86,6 +86,7 @@ async def main_menu(message: types.Message):
                                  f" Количество: {mikrot_qty} шт.\n"
                                  f" Цена: {mikrot_price} грн.")
 
+
 # --- Sub Menu ---
 @dp.message_handler(text=['Нстройка OS Linux/Windows/MacOS', 'Нстройка сетевого оборудования', "Назад"])
 async def sub_menu(message: types.Message):
