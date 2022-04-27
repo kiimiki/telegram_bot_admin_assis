@@ -138,7 +138,7 @@ async def cmd_cancel(message: types.Message, state: FSMContext):
     # current_state = await state.get_state()
     # print(current_state)
     # if current_state is None:
-        # return
+    # return
 
     if message.text == 'Отменить Заказ':
         await state.finish()
