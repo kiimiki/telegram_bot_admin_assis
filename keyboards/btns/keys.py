@@ -25,7 +25,10 @@ mainMenu.add(btn_m1).insert(btn_m2).insert(btn_m3)
 subMenu = ReplyKeyboardMarkup(resize_keyboard=True)
 btn_s1 = KeyboardButton('Нстройка сетевого оборудования')
 btn_s2 = KeyboardButton('Нстройка OS Linux/Windows/MacOS')
-subMenu.add(btn_s1).insert(btn_s2).add(btnMainM)
+btn_s3 = KeyboardButton('Разработка Телеграм Бота')
+btn_s4 = KeyboardButton('Разработка игровых БОТов/Кликеров')
+btn_s5 = KeyboardButton('Парсинг/Скраппинг')
+subMenu.add(btn_s1, btn_s2).add(btn_s3, btn_s5).add(btn_s4).add(btnMainM)
 
 # --- OS Admin ---
 

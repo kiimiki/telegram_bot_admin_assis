@@ -28,10 +28,12 @@ def sql_start():
         )""")
         db.commit()
 
-        sql_user_reg = "INSERT INTO users (user_id, f_name, l_name, admin_status) VALUES (%s, %s, %s, %s)"
-        val_user_reg = (a_id, 'B', 'K', '1',)
-        cursor.execute(sql_user_reg, val_user_reg)
-        db.commit()
+        cursor.execute(f"SELECT * FROM users WHERE user_id = {a_id}")
+        if cursor.fetchone() is None:
+            sql_user_reg = "INSERT INTO users (user_id, f_name, l_name, admin_status) VALUES (%s, %s, %s, %s)"
+            val_user_reg = (a_id, 'B', 'K', '1',)
+            cursor.execute(sql_user_reg, val_user_reg)
+            db.commit()
 
         cursor.execute("""CREATE TABLE IF NOT EXISTS mikrotik(
                 id BIGINT(50) AUTO_INCREMENT PRIMARY KEY,

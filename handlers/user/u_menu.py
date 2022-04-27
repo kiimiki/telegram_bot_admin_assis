@@ -1,7 +1,6 @@
 from aiogram import types
 from loader import dp, db, cursor
 from keyboards import mainMenu, subMenu, osAdminMenu, netMenu, orderMenu, netEquipment
-from data.config import admins_id
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 import random
@@ -102,6 +101,27 @@ async def os_job(message: types.Message):
     await message.answer(f"Уточните дистрибутив {message.text}", reply_markup=orderMenu)
 
 
+# ---Telegram bot order ---
+@dp.message_handler(text=['Разработка Телеграм Бота'], state=None)
+async def tgb_job(message: types.Message):
+    await FSMorders.job_name.set()
+    await message.answer(f"Укажите Название/Тематика БОТа {message.text}", reply_markup=orderMenu)
+
+
+# ---Game bot order ---
+@dp.message_handler(text=['Разработка игровых БОТов/Кликеров'], state=None)
+async def gbc_job(message: types.Message):
+    await FSMorders.job_name.set()
+    await message.answer(f"Укажите Название/Тематика БОТа {message.text}", reply_markup=orderMenu)
+
+
+# ---Parsing scrapping order ---
+@dp.message_handler(text=['Парсинг/Скраппинг'], state=None)
+async def scrpars_job(message: types.Message):
+    await FSMorders.job_name.set()
+    await message.answer(f"Укажите ресурс для Парсинга/Скраппинга{message.text}", reply_markup=orderMenu)
+
+
 # --- FSM start ---
 @dp.message_handler(state=FSMorders.job_name)
 async def job_name(message: types.Message, state: FSMContext):
@@ -115,11 +135,14 @@ async def job_name(message: types.Message, state: FSMContext):
 @dp.message_handler(state="*", commands='Отменить Заказ')
 @dp.message_handler(state="*", text='Отменить Заказ')
 async def cmd_cancel(message: types.Message, state: FSMContext):
-    current_state = await state.get_state()
-    if current_state is None:
+    # current_state = await state.get_state()
+    # print(current_state)
+    # if current_state is None:
         # return
-        await message.answer("Заказ отменен, вы возвращены в главное меню", reply_markup=mainMenu)
+
+    if message.text == 'Отменить Заказ':
         await state.finish()
+        await message.answer("Заказ отменен, вы возвращены в главное меню", reply_markup=mainMenu)
 
 
 @dp.message_handler(state=FSMorders.job_description)
