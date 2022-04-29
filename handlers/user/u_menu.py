@@ -1,5 +1,5 @@
 from aiogram import types
-from loader import dp, db, cursor
+from loader import dp, db, cursor, bot
 from keyboards import mainMenu, subMenu, osAdminMenu, netMenu, orderMenu, netEquipment
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
@@ -29,6 +29,7 @@ async def command_call_main_menu(message: types.Message):
         cursor.execute(sql_user_reg, val_user_reg)
         db.commit()
         print("add Admin:", message.from_user.id)
+        await bot.delete_message(message.from_user.id, message.message_id)
         await message.answer(f"Добро пожаловать: {message.from_user.full_name}", reply_markup=mainMenu)
     else:
         cursor.execute(f"SELECT * FROM users WHERE user_id = {message.chat.id}")
@@ -36,8 +37,10 @@ async def command_call_main_menu(message: types.Message):
         db.commit()
         print(a_u_s)
         if a_u_s == 1:
+            await bot.delete_message(message.from_user.id, message.message_id)
             await message.answer(f"Добро пожаловать, Админ: {message.from_user.full_name}", reply_markup=mainMenu)
         else:
+            await bot.delete_message(message.from_user.id, message.message_id)
             await message.answer(f"Добро пожаловать: {message.from_user.full_name}", reply_markup=mainMenu)
 
 
@@ -45,9 +48,11 @@ async def command_call_main_menu(message: types.Message):
 @dp.message_handler(text=["Услуги 🏷", "Товары 💲", "Корзина 📌", 'Главное меню', 'Mikrotik'])
 async def main_menu(message: types.Message):
     if message.text == "Услуги 🏷":
+        await bot.delete_message(message.from_user.id, message.message_id)
         await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}\n"
                              f" Выберете интересующий раздел ", reply_markup=subMenu)
     elif message.text == "Товары 💲":
+        await bot.delete_message(message.from_user.id, message.message_id)
         await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}",
                              reply_markup=netEquipment)
     elif message.text == "Корзина 📌":
@@ -56,6 +61,7 @@ async def main_menu(message: types.Message):
         db.commit()
         # print(all_orders)
         if len(all_orders) == 0:
+            await bot.delete_message(message.from_user.id, message.message_id)
             await message.answer("У вас еще нет заказов!")
         else:
             for cl_order in all_orders:
@@ -65,11 +71,13 @@ async def main_menu(message: types.Message):
                 j_s = cl_order[4]
                 j_date = cl_order[6]
                 # print(all_orders)
+                await bot.delete_message(message.from_user.id, message.message_id)
                 await message.answer(f"{message.from_user.full_name}\n Номер заказа: {o_n}"
                                      f"\n Наименование: {j_n}\n Описание: {j_d}\n"
                                      f" Статус: {j_s}\n Дата: {j_date}")
 
     elif message.text == 'Главное меню':
+        await bot.delete_message(message.from_user.id, message.message_id)
         await message.answer(f"{message.text}", reply_markup=mainMenu)
 
     elif message.text == 'Mikrotik':
@@ -81,6 +89,7 @@ async def main_menu(message: types.Message):
             mikrot_description = mikrot[2]
             mikrot_qty = mikrot[3]
             mikrot_price = mikrot[4]
+            await bot.delete_message(message.from_user.id, message.message_id)
             await message.answer(f"Модель: {mikrot_model}\n"
                                  f" Описание: {mikrot_description}\n"
                                  f" Количество: {mikrot_qty} шт.\n"
@@ -91,12 +100,15 @@ async def main_menu(message: types.Message):
 @dp.message_handler(text=['Нстройка OS Linux/Windows/MacOS', 'Нстройка сетевого оборудования', "Назад"])
 async def sub_menu(message: types.Message):
     if message.text == 'Нстройка OS Linux/Windows/MacOS':
+        await bot.delete_message(message.from_user.id, message.message_id)
         await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}\n"
                              f" Выберете интересующий раздел ", reply_markup=osAdminMenu)
     elif message.text == 'Нстройка сетевого оборудования':
+        await bot.delete_message(message.from_user.id, message.message_id)
         await message.answer(f"{message.from_user.full_name},\n Вы выбрали раздел:\n {message.text}",
                              reply_markup=netMenu)
     elif message.text == "Назад":
+        await bot.delete_message(message.from_user.id, message.message_id)
         await message.answer(f"{message.text}", reply_markup=subMenu)
 
 
@@ -104,6 +116,7 @@ async def sub_menu(message: types.Message):
 @dp.message_handler(text=['Маршрутизатор(ы)', 'Коммутатор(ы)', 'Маршрутизатор(ы)/Коммутатор(ы)/Точка WiFi',
                           'Точка WiFi'], state=None)
 async def net_job(message: types.Message):
+    await bot.delete_message(message.from_user.id, message.message_id)
     await FSMorders.job_name.set()
     await message.answer("Укажите Бренд(ы) и модель(и) обрудования", reply_markup=orderMenu)
 
@@ -111,6 +124,7 @@ async def net_job(message: types.Message):
 # ---OS order ---
 @dp.message_handler(text=['Linux', 'Windows', 'MacOS'], state=None)
 async def os_job(message: types.Message):
+    await bot.delete_message(message.from_user.id, message.message_id)
     await FSMorders.job_name.set()
     await message.answer(f"Уточните дистрибутив {message.text}", reply_markup=orderMenu)
 
@@ -118,6 +132,7 @@ async def os_job(message: types.Message):
 # ---Telegram bot order ---
 @dp.message_handler(text=['Разработка Телеграм Бота'], state=None)
 async def tgb_job(message: types.Message):
+    await bot.delete_message(message.from_user.id, message.message_id)
     await FSMorders.job_name.set()
     await message.answer(f"Укажите Название/Тематика БОТа {message.text}", reply_markup=orderMenu)
 
@@ -125,6 +140,7 @@ async def tgb_job(message: types.Message):
 # ---Game bot order ---
 @dp.message_handler(text=['Разработка игровых БОТов/Кликеров'], state=None)
 async def gbc_job(message: types.Message):
+    await bot.delete_message(message.from_user.id, message.message_id)
     await FSMorders.job_name.set()
     await message.answer(f"Укажите Название/Тематика БОТа {message.text}", reply_markup=orderMenu)
 
@@ -132,6 +148,7 @@ async def gbc_job(message: types.Message):
 # ---Parsing scrapping order ---
 @dp.message_handler(text=['Парсинг/Скраппинг'], state=None)
 async def scrpars_job(message: types.Message):
+    await bot.delete_message(message.from_user.id, message.message_id)
     await FSMorders.job_name.set()
     await message.answer(f"Укажите ресурс для Парсинга/Скраппинга{message.text}", reply_markup=orderMenu)
 
