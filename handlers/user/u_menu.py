@@ -3,6 +3,7 @@ from loader import dp, db, cursor, bot
 from keyboards import mainMenu, subMenu, osAdminMenu, netMenu, orderMenu, netEquipment
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.dispatcher.filters import Text
 import random
 
 order_d = []
@@ -64,6 +65,7 @@ async def main_menu(message: types.Message):
             await bot.delete_message(message.from_user.id, message.message_id)
             await message.answer("У вас еще нет заказов!")
         else:
+            await bot.delete_message(message.from_user.id, message.message_id)
             for cl_order in all_orders:
                 o_n = str(cl_order[1])
                 j_n = cl_order[2]
@@ -71,7 +73,6 @@ async def main_menu(message: types.Message):
                 j_s = cl_order[4]
                 j_date = cl_order[6]
                 # print(all_orders)
-                await bot.delete_message(message.from_user.id, message.message_id)
                 await message.answer(f"{message.from_user.full_name}\n Номер заказа: {o_n}"
                                      f"\n Наименование: {j_n}\n Описание: {j_d}\n"
                                      f" Статус: {j_s}\n Дата: {j_date}")
@@ -83,13 +84,14 @@ async def main_menu(message: types.Message):
     elif message.text == 'Mikrotik':
         cursor.execute(f"SELECT * FROM mikrotik")
         all_mikrotik = cursor.fetchall()
-        db.commit()
+        db.close()
+        await bot.delete_message(message.from_user.id, message.message_id)
         for mikrot in all_mikrotik:
             mikrot_model = mikrot[1]
             mikrot_description = mikrot[2]
             mikrot_qty = mikrot[3]
             mikrot_price = mikrot[4]
-            await bot.delete_message(message.from_user.id, message.message_id)
+
             await message.answer(f"Модель: {mikrot_model}\n"
                                  f" Описание: {mikrot_description}\n"
                                  f" Количество: {mikrot_qty} шт.\n"
@@ -164,16 +166,14 @@ async def job_name(message: types.Message, state: FSMContext):
 
 # --- Order cancel ---
 @dp.message_handler(state="*", commands='Отменить Заказ')
-@dp.message_handler(state="*", text='Отменить Заказ')
+@dp.message_handler(Text(equals='Отменить Заказ', ignore_case=True), state="*")
 async def cmd_cancel(message: types.Message, state: FSMContext):
-    # current_state = await state.get_state()
-    # print(current_state)
-    # if current_state is None:
-    # return
-
-    if message.text == 'Отменить Заказ':
-        await state.finish()
-        await message.answer("Заказ отменен, вы возвращены в главное меню", reply_markup=mainMenu)
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    await state.finish()
+    await bot.delete_message(message.from_user.id, message.message_id)
+    await message.answer("Заказ отменен, вы возвращены в главное меню", reply_markup=mainMenu)
 
 
 @dp.message_handler(state=FSMorders.job_description)
@@ -183,7 +183,6 @@ async def job_description(message: types.Message, state: FSMContext):
     await message.answer(message.text)
     async with state.proxy() as data:
         order_number = random.randint(1000, 999999999)
-
         await message.answer(f"{message.chat.full_name}\n Номер заказа:\n {order_number}\n Наименование услуги:\n"
                              f" {list(data.values())[0]} \n Описание задачи:\n {list(data.values())[1]}"
                              f"\n Подтвердите или Отмените заказ")
@@ -211,9 +210,11 @@ async def save_to_bd(message: types.Message):
         order_d.clear()
         job_n_d.clear()
         job_d.clear()
+
         await message.answer('В ближайшее время с вами свяжется специалист по вашему заказу', reply_markup=mainMenu)
     elif message.text == 'Отменить Заказ':
         order_d.clear()
         job_n_d.clear()
         job_d.clear()
+        await bot.delete_message(message.from_user.id, message.message_id)
         await message.answer('Ваш заказ отменен', reply_markup=mainMenu)
