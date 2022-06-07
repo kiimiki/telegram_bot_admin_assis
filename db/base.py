@@ -17,6 +17,15 @@ def sql_start():
         )""")
         db.commit()
 
+        print('Create table "btn"')
+        cursor.execute("""CREATE TABLE IF NOT EXISTS btn(
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                btn_name TEXT,
+                btn_group TEXT
+                )""")
+        db.commit()
+
+        print('Create table "users"')
         cursor.execute("""CREATE TABLE IF NOT EXISTS users(
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id BIGINT(50) NOT NULL UNIQUE,
